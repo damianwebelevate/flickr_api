@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="css/colorbox.css">
+        <script src="js/jquery.js"></script>
+        <script src="js/colorbox-min.js"></script>
+
+    </head>
+    <body>
+
+        <input id="search" type="text" value="" name="search" />
+        <button onclick="getValue();" id="button"> GO! </button>
+        <div id="images"></div>
+
+
+                <script>
+            
+            var input;
+            var element;
+
+            function getValue(){
+                input = document.getElementById('search');
+                element = input.value;
+                console.log("in scope " + element);
+// console.log(element);
+            var params = {
+                            // id: '68459092@N06', // my Flickr User ID
+                            tags: element,
+                            tagmode: "any",
+                            format: 'json',
+                            jsoncallback: '?'
+                        };
+
+            var feedURL = "http://api.flickr.com/services/feeds/photos_public.gne?";
+            var feedQuery = decodeURIComponent($.param(params));
+
+            $.getJSON(feedURL + '&' + feedQuery, buildLinks);
+
+           function buildLinks (json) {
+                var 
+                photo,
+                $links = $(), 
+                $thumb,
+                $anchor;
+
+                while ( photo = json.items.pop() ){
+                    $anchor = $('<a>').attr({
+                        // get the medium-large size photo
+                        href: photo.media.m.replace('_m', '_z'),
+                        title: photo.title
+                    });
+
+                    $thumb = $('<img>').attr({
+                        // get the small-square size thumbnail photo
+                        src: photo.media.m.replace('_m', '_s'),
+                        alt: photo.title
+                    }).appendTo($anchor);
+
+                    $links = $links.add($anchor);
+                }
+
+                $links.colorbox({rel:'flickr', speed:0});
+
+                // Wait until the DOM has loaded before trying to append to the body
+                $(document).ready(function () {
+                    $('#images').append($links);
+                });
+
+            }
+        }
+             
+        
+
+        </script>
+    </body>
+</html>
